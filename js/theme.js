@@ -255,9 +255,42 @@ var typed = new Typed('.typed', {
 
 $(window).on('load', function () {
   AOS.init({
-    once: true, // whether animation should happen only once - while scrolling down
-    mirror: false, // whether elements should animate out while scrolling past them
-    anchorPlacement: 'top-bottom', // defines which position of the element should trigger the animation
+    duration: 800,
+    easing: 'ease-out-cubic',
+    once: true,
+    mirror: false,
+    anchorPlacement: 'top-bottom',
+    offset: 60,
+  });
+
+  // Animate progress bars on scroll into view
+  function animateProgressBars() {
+    $('.my-progress-bar').each(function () {
+      var $bar = $(this);
+      var width = $bar[0].style.width;
+      $bar.css({ width: '0%', transition: 'width 1.2s ease-out' });
+      if (isElementInViewport($bar)) {
+        setTimeout(function() { $bar.css('width', width); }, 200);
+      }
+    });
+  }
+
+  function isElementInViewport(el) {
+    if (typeof el === 'jQuery') el = el[0];
+    var rect = el.getBoundingClientRect();
+    return (rect.top < window.innerHeight && rect.bottom > 0);
+  }
+
+  // Trigger on load and scroll
+  animateProgressBars();
+  $(window).on('scroll', function() {
+    animateProgressBars();
+  });
+
+  // Stagger animate experience entries
+  $('.border-start.border-2.border-primary').children('h3').each(function(i) {
+    $(this).attr('data-aos', 'fade-right');
+    $(this).attr('data-aos-delay', (i * 100).toString());
   });
 });
 
